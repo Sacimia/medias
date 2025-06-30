@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <!-- ... (cabeçalho anterior permanece igual) ... -->
+</head>
+<body>
+  <!-- ... (corpo anterior permanece igual) ... -->
+
+  <script>
+    // ... (funções de som anteriores permanecem iguais) ...
+
+    // Sistema de códigos
+    const konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+    const wasdCode = ['w', 'w', 's', 's', 'a', 'd', 'a', 'd', 'b', 'a'];
+    const bloodCode = ['a', 'b', 'a', 'c', 'a', 'b', 'b'];
+    let konamiIndex = 0;
+    let wasdIndex = 0;
+    let bloodIndex = 0;
+    let bloodMode = false;
+    let secretLinksActive = false;
+
+    // Efeitos de cores
+    const colorEffects = {
+      konami: {
+        bodyBg: 'radial-gradient(circle at center, #dcf8f8 0%, #b9e5e5 100%)',
+        containerBg: 'linear-gradient(145deg, #dcf8f8, #bce9e9)',
+        borderColor: '#10a2a2',
+        titleColor: '#107c10',
+        textShadow: '0 0 5px #10a2a2'
+      },
+      blood: {
+        bodyBg: 'radial-gradient(circle at center, #3a0000 0%, #1a0000 100%)',
+        containerBg: 'linear-gradient(145deg, #2a0000, #1a0000)',
+        borderColor: '#8a0303',
+        titleColor: '#ff0000',
+        textShadow: '0 0 5px #ff0000'
+      }
+    };
+
+    function applyColorEffect(effect) {
+      document.body.style.background = effect.bodyBg;
+      document.querySelector('.container').style.background = effect.containerBg;
+      document.querySelector('.container').style.borderColor = effect.borderColor;
+      document.querySelector('h1').style.color = effect.titleColor;
+      document.querySelector('h1').style.textShadow = effect.textShadow;
+    }
+
+    function resetColors() {
+      document.body.style.background = '';
+      document.querySelector('.container').style.background = '';
+      document.querySelector('.container').style.borderColor = '';
+      document.querySelector('h1').style.color = '';
+      document.querySelector('h1').style.textShadow = '';
+    }
+
+    document.addEventListener('keydown', function(e) {
+      checkKonamiCode(e.key);
+      checkWASDCode(e.key.toLowerCase());
+      checkBloodCode(e.key.toLowerCase());
+    });
+
+    function konamiCodeActivated() {
+      if (!secretLinksActive) {
+        activateSecretLinks();
+        secretLinksActive = true;
+      }
+      applyColorEffect(colorEffects.konami);
+      setTimeout(resetColors, 3000); // Efeito por 3 segundos
+      showAchievement("Konami Code");
+    }
+
+    function toggleBloodMode() {
+      bloodMode = !bloodMode;
+      if (bloodMode) {
+        applyColorEffect(colorEffects.blood);
+        playMKSound();
+        showAchievement("Blood Code");
+      } else {
+        resetColors();
+      }
+      init3DTrophy();
+    }
+
+    // ... (restante do código permanece igual) ...
+  </script>
+</body>
+</html>
