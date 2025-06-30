@@ -1,13 +1,251 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <!-- ... (cabeçalho anterior permanece igual) ... -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Portal do Aventureiro</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=MedievalSharp&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <style>
+    :root {
+      --parchment: #f8f1dc;
+      --parchment-shadow: #e5d8b9;
+      --ink: #3a2508;
+      --gold: #caa56c;
+      --wood: #6e4b1c;
+      --blood: #8a0303;
+    }
+
+    body {
+      background: radial-gradient(circle at center, #f8f1dc 0%, #e5d8b9 100%);
+      color: var(--ink);
+      font-family: 'MedievalSharp', cursive;
+      padding: 20px;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .container {
+      background: linear-gradient(145deg, #f8f1dc, #e9ddbc);
+      border: 6px double #d4b886;
+      padding: 40px 30px;
+      max-width: 800px;
+      width: 90%;
+      box-shadow:
+        inset 0 0 20px #cbb78e,
+        0 0 20px rgba(0, 0, 0, 0.2);
+      border-radius: 25px;
+      position: relative;
+    }
+
+    h1 {
+      font-family: 'Press Start 2P', cursive;
+      font-size: 24px;
+      margin-bottom: 30px;
+      color: var(--ink);
+      text-shadow: 1px 1px 0 var(--parchment-shadow);
+    }
+
+    .blood-mode {
+      background: radial-gradient(circle at center, #3a0000 0%, #1a0000 100%) !important;
+      color: #e0e0e0 !important;
+    }
+
+    .blood-mode .container {
+      background: linear-gradient(145deg, #2a0000, #1a0000) !important;
+      border-color: var(--blood) !important;
+      color: #e0e0e0 !important;
+    }
+
+    .blood-mode h1 {
+      color: #ff0000 !important;
+      text-shadow: 0 0 5px #ff0000 !important;
+    }
+
+    .blood-mode .link-button {
+      background: linear-gradient(to bottom, #5a0000, #3a0000) !important;
+      color: #e0e0e0 !important;
+      border-color: var(--blood) !important;
+      text-shadow: 1px 1px 1px #000 !important;
+    }
+
+    .blood-mode .link-button:hover {
+      background: linear-gradient(to bottom, #7a0000, #5a0000) !important;
+      box-shadow: 0 0 10px #ff0000 !important;
+    }
+
+    .links-container {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .link-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(to bottom, #d4b886, #b89c70);
+      color: var(--ink);
+      text-decoration: none;
+      padding: 16px;
+      width: 100%;
+      max-width: 350px;
+      border: 3px double var(--wood);
+      border-radius: 10px;
+      font-size: 18px;
+      box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
+      text-shadow: 1px 1px 1px #fff;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .link-button:hover {
+      transform: translateY(-3px) scale(1.02);
+      background: linear-gradient(to bottom, #e5d8b9, #d4b886);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .link-icon {
+      margin-right: 12px;
+      font-size: 24px;
+    }
+
+    #achievement {
+      position: fixed;
+      top: 20px;
+      right: -400px;
+      background: #1c1c1c;
+      color: #fff;
+      padding: 15px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      width: 350px;
+      z-index: 9999;
+      font-size: 14px;
+      border-left: 4px solid #107c10;
+      transform: translateX(0);
+      transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      backdrop-filter: blur(5px);
+    }
+
+    #achievement.show {
+      transform: translateX(-420px);
+    }
+
+    #trophy-container {
+      width: 60px;
+      height: 60px;
+      margin-right: 15px;
+    }
+
+    #achievement-title {
+      font-weight: bold;
+      margin-bottom: 5px;
+      font-size: 16px;
+    }
+
+    #achievement-desc {
+      color: #aaa;
+      font-size: 13px;
+    }
+
+    #achievement-points {
+      color: #ffd700;
+      font-size: 14px;
+      margin-top: 5px;
+      font-weight: bold;
+    }
+
+    @media (max-width: 600px) {
+      h1 { font-size: 18px; }
+      .link-button { font-size: 16px; padding: 14px; }
+      #achievement { width: 280px; font-size: 12px; }
+      #achievement.show { transform: translateX(-300px); }
+      #trophy-container { width: 40px; height: 40px; }
+    }
+
+    audio { display: none; }
+  </style>
 </head>
 <body>
-  <!-- ... (corpo anterior permanece igual) ... -->
+  <div class="container">
+    <h1>✨ Portal do Aventureiro ✨</h1>
+    <div class="links-container" id="links">
+      <a class="link-button" href="https://www.instagram.com" target="_blank" onclick="playClickSound()">
+        <span class="link-icon">📜</span> Instagram
+      </a>
+      <a class="link-button" href="https://www.youtube.com" target="_blank" onclick="playClickSound()">
+        <span class="link-icon">🗡️</span> YouTube
+      </a>
+      <a class="link-button" href="https://www.twitch.tv" target="_blank" onclick="playClickSound()">
+        <span class="link-icon">🛡️</span> Twitch
+      </a>
+      <a class="link-button" href="https://www.linkedin.com" target="_blank" onclick="playClickSound()">
+        <span class="link-icon">⚔️</span> LinkedIn
+      </a>
+    </div>
+  </div>
+
+  <!-- Conquista -->
+  <div id="achievement">
+    <div id="trophy-container"></div>
+    <div>
+      <div id="achievement-title">Perfil Secreto Desbloqueado!</div>
+      <div id="achievement-desc">Você descobriu os links secretos usando o código!</div>
+      <div id="achievement-points">20G</div>
+    </div>
+  </div>
+
+  <!-- Sons -->
+  <audio id="clickSound" src="https://assets.mixkit.co/sfx/preview/mixkit-arcade-game-jump-coin-216.mp3"></audio>
+  <audio id="achievementSound" src="xbox.m4a"></audio>
+  <audio id="hoverSound" src="https://assets.mixkit.co/sfx/preview/mixkit-select-click-1109.mp3"></audio>
+  <audio id="mkSound" src="https://assets.mixkit.co/sfx/preview/mixkit-achievement-bell-600.mp3"></audio>
 
   <script>
-    // ... (funções de som anteriores permanecem iguais) ...
+    // Configuração dos sons
+    function setupSounds() {
+      const xboxSound = document.getElementById('achievementSound');
+      xboxSound.addEventListener('error', function() {
+        console.log('Xbox sound not found, using fallback sound');
+        this.src = 'https://assets.mixkit.co/sfx/preview/mixkit-unlock-game-notification-253.mp3';
+      });
+    }
+
+    function playClickSound() {
+      const sound = document.getElementById('clickSound');
+      sound.currentTime = 0;
+      sound.play().catch(e => console.log("Erro ao reproduzir som:", e));
+    }
+
+    function playAchievementSound() {
+      const sound = document.getElementById('achievementSound');
+      sound.currentTime = 0;
+      sound.play().catch(e => console.log("Erro ao reproduzir som:", e));
+    }
+
+    function playHoverSound() {
+      const sound = document.getElementById('hoverSound');
+      sound.currentTime = 0;
+      sound.volume = 0.3;
+      sound.play().catch(e => console.log("Erro ao reproduzir som:", e));
+    }
+
+    function playMKSound() {
+      const sound = document.getElementById('mkSound');
+      sound.currentTime = 0;
+      sound.play().catch(e => console.log("Erro ao reproduzir som:", e));
+    }
+
+    // Configuração dos eventos de hover
+    document.querySelectorAll('.link-button').forEach(button => {
+      button.addEventListener('mouseenter', playHoverSound);
+    });
 
     // Sistema de códigos
     const konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
@@ -19,69 +257,201 @@
     let bloodMode = false;
     let secretLinksActive = false;
 
-    // Efeitos de cores
-    const colorEffects = {
-      konami: {
-        bodyBg: 'radial-gradient(circle at center, #dcf8f8 0%, #b9e5e5 100%)',
-        containerBg: 'linear-gradient(145deg, #dcf8f8, #bce9e9)',
-        borderColor: '#10a2a2',
-        titleColor: '#107c10',
-        textShadow: '0 0 5px #10a2a2'
-      },
-      blood: {
-        bodyBg: 'radial-gradient(circle at center, #3a0000 0%, #1a0000 100%)',
-        containerBg: 'linear-gradient(145deg, #2a0000, #1a0000)',
-        borderColor: '#8a0303',
-        titleColor: '#ff0000',
-        textShadow: '0 0 5px #ff0000'
-      }
-    };
-
-    function applyColorEffect(effect) {
-      document.body.style.background = effect.bodyBg;
-      document.querySelector('.container').style.background = effect.containerBg;
-      document.querySelector('.container').style.borderColor = effect.borderColor;
-      document.querySelector('h1').style.color = effect.titleColor;
-      document.querySelector('h1').style.textShadow = effect.textShadow;
-    }
-
-    function resetColors() {
-      document.body.style.background = '';
-      document.querySelector('.container').style.background = '';
-      document.querySelector('.container').style.borderColor = '';
-      document.querySelector('h1').style.color = '';
-      document.querySelector('h1').style.textShadow = '';
-    }
-
     document.addEventListener('keydown', function(e) {
       checkKonamiCode(e.key);
       checkWASDCode(e.key.toLowerCase());
       checkBloodCode(e.key.toLowerCase());
     });
 
+    function checkKonamiCode(key) {
+      if (key === konamiCode[konamiIndex]) {
+        konamiIndex++;
+        if (konamiIndex === konamiCode.length) {
+          konamiCodeActivated();
+          konamiIndex = 0;
+        }
+      } else {
+        konamiIndex = 0;
+      }
+    }
+
+    function checkWASDCode(key) {
+      if (key === wasdCode[wasdIndex]) {
+        wasdIndex++;
+        if (wasdIndex === wasdCode.length) {
+          konamiCodeActivated();
+          wasdIndex = 0;
+        }
+      } else {
+        wasdIndex = 0;
+      }
+    }
+
+    function checkBloodCode(key) {
+      if (key === bloodCode[bloodIndex]) {
+        bloodIndex++;
+        if (bloodIndex === bloodCode.length) {
+          toggleBloodMode();
+          bloodIndex = 0;
+        }
+      } else {
+        bloodIndex = 0;
+      }
+    }
+
     function konamiCodeActivated() {
       if (!secretLinksActive) {
         activateSecretLinks();
         secretLinksActive = true;
       }
-      applyColorEffect(colorEffects.konami);
-      setTimeout(resetColors, 3000); // Efeito por 3 segundos
       showAchievement("Konami Code");
     }
 
     function toggleBloodMode() {
       bloodMode = !bloodMode;
       if (bloodMode) {
-        applyColorEffect(colorEffects.blood);
+        document.body.classList.add('blood-mode');
         playMKSound();
         showAchievement("Blood Code");
       } else {
-        resetColors();
+        document.body.classList.remove('blood-mode');
       }
       init3DTrophy();
     }
 
-    // ... (restante do código permanece igual) ...
+    function showAchievement(type) {
+      const achievement = document.getElementById('achievement');
+      
+      if (type === "Blood Code") {
+        achievement.innerHTML = `
+          <div id="trophy-container"></div>
+          <div>
+            <div id="achievement-title">BLOOD CODE ATIVADO!</div>
+            <div id="achievement-desc">ABACABB - Mortal Kombat Mode</div>
+            <div id="achievement-points">FATALITY!</div>
+          </div>
+        `;
+        achievement.style.borderLeft = '4px solid #8a0303';
+        playMKSound();
+      } else {
+        achievement.innerHTML = `
+          <div id="trophy-container"></div>
+          <div>
+            <div id="achievement-title">KONAMI CODE ATIVADO!</div>
+            <div id="achievement-desc">Links secretos desbloqueados!</div>
+            <div id="achievement-points">30G</div>
+          </div>
+        `;
+        achievement.style.borderLeft = '4px solid #107c10';
+        playAchievementSound();
+      }
+      
+      achievement.classList.add('show');
+      setTimeout(() => {
+        achievement.classList.remove('show');
+      }, 5000);
+      
+      init3DTrophy();
+    }
+
+    function activateSecretLinks() {
+      const linksDiv = document.getElementById('links');
+      linksDiv.innerHTML = `
+        <a class="link-button" href="https://github.com/Sacimia" target="_blank" onclick="playClickSound()">
+          <span class="link-icon">🐉</span> GitHub Secreto
+        </a>
+        <a class="link-button" href="https://viniciusnimia.dev" target="_blank" onclick="playClickSound()">
+          <span class="link-icon">🏰</span> Portfólio
+        </a>
+        <a class="link-button" href="https://store.steampowered.com" target="_blank" onclick="playClickSound()">
+          <span class="link-icon">⚙️</span> Steam
+        </a>
+        <a class="link-button" href="https://discord.com" target="_blank" onclick="playClickSound()">
+          <span class="link-icon">🧙‍♂️</span> Discord
+        </a>
+      `;
+      document.querySelectorAll('.link-button').forEach(button => {
+        button.addEventListener('mouseenter', playHoverSound);
+      });
+    }
+
+    function init3DTrophy() {
+      const container = document.getElementById('trophy-container');
+      if (!container) return;
+      
+      // Limpa qualquer conteúdo existente
+      while (container.firstChild) {
+        container.removeChild(container.firstChild);
+      }
+
+      const width = container.clientWidth;
+      const height = container.clientHeight;
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(45, width/height, 0.1, 1000);
+      const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+      renderer.setSize(width, height);
+      container.appendChild(renderer.domElement);
+
+      // Configuração de iluminação
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
+      scene.add(ambientLight);
+      
+      const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+      directionalLight.position.set(5, 10, 7.5);
+      scene.add(directionalLight);
+
+      // Material baseado no modo
+      const material = bloodMode ? 
+        new THREE.MeshPhongMaterial({
+          color: 0x8a0303,
+          shininess: 100,
+          specular: 0xff3333
+        }) : 
+        new THREE.MeshPhongMaterial({
+          color: 0xffd700,
+          shininess: 100,
+          specular: 0xffffaa
+        });
+
+      // Criação do troféu
+      const base = new THREE.Mesh(new THREE.CylinderGeometry(0.8, 1, 0.4, 32), material);
+      base.position.y = -0.8;
+      scene.add(base);
+
+      const cup = new THREE.Mesh(new THREE.CylinderGeometry(0.6, 0.4, 1.2, 32), material);
+      cup.position.y = 0.3;
+      scene.add(cup);
+
+      const handleLeft = new THREE.Mesh(new THREE.TorusGeometry(0.6, 0.08, 16, 100, Math.PI), material);
+      handleLeft.rotation.z = Math.PI / 2;
+      handleLeft.position.set(-0.7, 0.6, 0);
+      scene.add(handleLeft);
+
+      const handleRight = handleLeft.clone();
+      handleRight.position.set(0.7, 0.6, 0);
+      scene.add(handleRight);
+
+      camera.position.z = 3;
+
+      function animate() {
+        requestAnimationFrame(animate);
+        scene.rotation.y += 0.01;
+        renderer.render(scene, camera);
+      }
+      animate();
+
+      window.addEventListener('resize', () => {
+        camera.aspect = container.clientWidth / container.clientHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(container.clientWidth, container.clientHeight);
+      });
+    }
+
+    // Inicializações quando a página carrega
+    window.addEventListener('load', function() {
+      setupSounds();
+      init3DTrophy();
+    });
   </script>
 </body>
 </html>
